@@ -9,6 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+  },
   "dependencies": {
     "@prisma/client": "^4.13.0",
     "@trpc/client": "^10.21.1",
