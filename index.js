@@ -11,17 +11,40 @@ server.get("/", (req, res) => {
 
 server.get("/users", async (req, res) => {
 	// run inside `async` function
-	const newUser = await prisma.user.create({
+	await prisma.user.create({
 		data: {
-			name: "Alice",
-			email: "alice@prisma.io",
+			name: "Rich",
+			email: "hello@prisma.com",
+			posts: {
+				create: {
+					title: "My first post",
+					body: "Lots of really interesting stuff",
+					slug: "my-first-post",
+				},
+			},
 		},
 	});
 
-	const users = await prisma.user.findMany();
-	res.json(users);
+	const allUsers = await prisma.user.findMany({
+		include: {
+			posts: true,
+		},
+	});
+	res.json(allUsers);
 });
 
-server.listen(port, () => {
-	console.log("server running on http://127.0.0.1: " + port);
-});
+prisma
+	.$connect()
+	.then(() => {
+		server.listen(port, () => {
+			console.log("server running on http://127.0.0.1: " + port);
+		});
+	})
+	.then(async () => {
+		await prisma.$disconnect();
+	})
+	.catch(async (e) => {
+		console.error(e);
+		await prisma.$disconnect();
+		process.exit(1);
+	});
