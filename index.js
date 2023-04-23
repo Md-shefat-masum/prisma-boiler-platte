@@ -4,13 +4,13 @@ const port = 5000;
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 // use `prisma` in your application to read and write data in your DB
+server.set("json spaces", 3);
 
 server.get("/", (req, res) => {
 	res.send("welcom to prisma-express");
 });
 
-server.get("/users", async (req, res) => {
-	// run inside `async` function
+server.get("/users/create", async (req, res) => {
 	await prisma.user.create({
 		data: {
 			name: "Rich",
@@ -25,6 +25,11 @@ server.get("/users", async (req, res) => {
 		},
 	});
 
+	res.json("data created");
+});
+
+server.get("/users", async (req, res) => {
+	// run inside `async` function
 	const allUsers = await prisma.user.findMany({
 		include: {
 			posts: true,
@@ -36,8 +41,9 @@ server.get("/users", async (req, res) => {
 prisma
 	.$connect()
 	.then(() => {
+		console.log("db connected");
 		server.listen(port, () => {
-			console.log("server running on http://127.0.0.1: " + port);
+			console.log("server running on http://127.0.0.1:" + port);
 		});
 	})
 	.then(async () => {

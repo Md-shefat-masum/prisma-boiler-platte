@@ -1,41 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Post {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  slug     String    @unique
-  title    String
-  body     String
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId String    @db.ObjectId
-  comments Comment[]
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  body   String
+  slug   String
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  email   String   @unique
-  name    String?
-  address Address?
-  posts   Post[]
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String? 
+  password String?
+  phone    String?
+  role     String?
+  username String?
+  name     String?
+  posts    Post[]
 }
 
-model Comment {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  comment String
-  post    Post   @relation(fields: [postId], references: [id])
-  postId  String @db.ObjectId
+model banners {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int?    @map("__v")
+  button_text String
+  button_url  String
+  image       String
+  status      Int
+  title       String
 }
 
-// Address is an embedded document
-type Address {
-  street String
-  city   String
-  state  String
-  zip    String
+model carts {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  v              Int    @map("__v")
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  discount       Json?
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  discount_price Json?
+  price          Int
+  product_id     String @db.ObjectId
+  qty            Int
+  thumb_image    String
+  user_id        String @db.ObjectId
+}
+
+model categories {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  v         Int      @map("__v")
+  createdAt DateTime @db.Date
+  creator   String   @db.ObjectId
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  parent    Json?
+  title     String
+  updatedAt DateTime @db.Date
+}
+
+model products {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  v              Int      @map("__v")
+  category       String   @db.ObjectId
+  createdAt      DateTime @db.Date
+  creator        String   @db.ObjectId
+  description    String
+  discount       Int
+  discount_date  DateTime @db.Date
+  discount_price Int
+  price          Int
+  related_image  String[]
+  status         Int
+  thumb_image    String
+  title          String
+  updatedAt      DateTime @db.Date
 }
