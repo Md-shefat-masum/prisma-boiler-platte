@@ -14,7 +14,7 @@ server.get("/users/create", async (req, res) => {
 	await prisma.user.create({
 		data: {
 			name: "Rich",
-			email: "hello@prisma.com",
+			email: parseInt(Math.random() * 10000) + "hello@prisma.com",
 			posts: {
 				create: {
 					title: "My first post",
@@ -36,6 +36,44 @@ server.get("/users", async (req, res) => {
 		},
 	});
 	res.json(allUsers);
+});
+
+server.get("/users/:id", async (req, res) => {
+	// run inside `async` function
+	const user = await prisma.user.findUnique({
+		where: {
+			id: req.params.id,
+		},
+		select: {
+			id: true,
+			email: true,
+			name: true,
+            posts: true,
+		},
+		// include: {
+		// 	posts: true,
+		// },
+	});
+	res.json(user);
+});
+server.get("/users/edit/:id", async (req, res) => {
+	const updateUser = await prisma.user.update({
+		where: {
+			id: req.params.id,
+		},
+		data: {
+			name: parseInt(Math.random() * 10000) + "Viola the Magnificent",
+		},
+	});
+	res.json(updateUser);
+});
+server.get("/users/delete/:id", async (req, res) => {
+	const deleteUser = await prisma.user.delete({
+		where: {
+			id: req.params.id,
+		},
+	});
+	res.json(deleteUser);
 });
 
 prisma
